@@ -36,13 +36,6 @@ export default function Page() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = useState("");
 
-  // const filteredData = data.countries.filter((c) =>
-  //   Object.values(c).some(
-  //     (val) =>
-  //       typeof val === "string" && val.includes(searchRef.current?.value || "")
-  //   )
-  // );
-
   const getData = async () => {
     const result = await client.query({
       query: gql`
@@ -68,39 +61,59 @@ export default function Page() {
     setFilteredAndGroup(result.data);
   };
 
+  const selectOnLoadAndAfterFilter = () => {
+    if (filterAndGroup.countries.length >= 9)
+      handleSelection(filterAndGroup.countries[9]);
+    else
+      handleSelection(
+        filterAndGroup.countries[filterAndGroup.countries.length - 1]
+      );
+  };
+
   useEffect(() => {
     getData();
+    searchRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    selectOnLoadAndAfterFilter();
+  }, [filterAndGroup]);
 
   const handleSearch = (str: string) => {
     setSearchValue(str);
 
     const searchParams = str.split(" ");
-    let filterData = [...data.countries];
+    let filteredData = [...data.countries];
 
     searchParams.forEach((param) => {
-      const [key, value] = param.split(":");
+      let [key, value] = param.split(":");
 
       if (key === "search") {
-        filterData = filterData.filter((c) =>
+        filteredData = filteredData.filter((c) =>
           Object.values(c).some(
             (val) =>
               typeof val === "string" &&
               typeof value === "string" &&
-              val.toLowerCase().includes(value.toLowerCase())
+              val.toLowerCase().includes(value.trim().toLowerCase())
           )
         );
+      } else if (key === "group") {
+        //console.log(value);
       }
-      console.log(value);
 
-      if (value === "" || value === null || value === undefined)
+      if (value === null || value === undefined) value = "";
+      if (key === "search" && value === "")
         setFilteredAndGroup({ countries: [...data.countries] });
-      else setFilteredAndGroup({ countries: filterData });
+      else setFilteredAndGroup({ countries: filteredData });
     });
   };
 
-  const handleSelection = (country: Country) => {
+  const handleDeselection = (country: Country) => {
     if (country === selectedItem) setSelectedItem(null);
+  };
+
+  const handleSelection = (country: Country) => {
+    if (country === selectedItem) return;
     else {
       setSelectedItem(country);
       setColorIndex((prev) => (prev + 1) % Object.keys(Colors.primary).length);
@@ -113,7 +126,7 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-12 pt-6 h-full">
+    <div className="flex flex-col items-center space-y-12 py-6 h-full px-12">
       <div className="w-96 relative">
         <input
           type="text"
@@ -156,7 +169,10 @@ export default function Page() {
                       ? selectedItemBgClass
                       : "hover:bg-slate-100"
                   } hover:cursor-pointer`}
-                  onClick={() => handleSelection(country)}
+                  onClick={() => {
+                    handleSelection(country);
+                    handleDeselection(country);
+                  }}
                 >
                   <td className="border p-2">{country.name}</td>
                   <td className="border p-2">{country.native}</td>
