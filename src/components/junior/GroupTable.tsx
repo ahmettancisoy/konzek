@@ -22,7 +22,10 @@ const GroupTable: React.FC<Props> = ({
       {Object.entries(groupFilteredData).map(([groupKey, countries]) => (
         <React.Fragment key={groupKey}>
           <tr>
-            <th colSpan={7} className="text-lg font-semibold">
+            <th
+              colSpan={7}
+              className="text-lg font-semibold border bg-stone-50"
+            >
               {groupKey}
             </th>
           </tr>
