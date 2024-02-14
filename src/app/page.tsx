@@ -2,18 +2,16 @@
 import { useState, useEffect, useRef } from "react";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import Search from "@/components/icons/Search";
-import { splitCurrency } from "./utils/junior/splitCurrency";
 import { Colors } from "./constants/themeColors";
 import Spinner from "@/components/junior/Spinner";
+import { getLastNestedValue } from "./features/junior/group";
+import { Country } from "./constants/countryType";
+import SearchTable from "@/components/junior/SearchTable";
+import GroupTable from "@/components/junior/GroupTable";
 
-interface Country {
-  name: string;
-  native: string;
-  capital: string;
-  emoji: string;
-  currency: string;
-  continent: { name: string };
-  languages: { code: string; name: string }[];
+interface FilteredData {
+  countries: Country[];
+  [key: string]: any;
 }
 
 export default function Page() {
@@ -27,11 +25,13 @@ export default function Page() {
   const [selectedItemBgClass, setSelectedItemBgClass] = useState("");
 
   const [data, setData] = useState<{ countries: Country[] }>({ countries: [] });
-  const [filterAndGroup, setFilteredAndGroup] = useState<{
-    countries: Country[];
-  }>({
+  const [filteredData, setFilteredData] = useState<FilteredData>({
     countries: [],
   });
+  const [groupFilteredData, setGroupFilteredData] = useState<{
+    [key: string]: Country[];
+  }>({});
+  const [isGrouped, setIsGrouped] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = useState("");
@@ -58,16 +58,27 @@ export default function Page() {
       `,
     });
     setData(result.data);
-    setFilteredAndGroup(result.data);
+    setFilteredData(result.data);
   };
 
   const selectOnLoadAndAfterFilter = () => {
-    if (filterAndGroup.countries.length >= 9)
-      handleSelection(filterAndGroup.countries[9]);
-    else
-      handleSelection(
-        filterAndGroup.countries[filterAndGroup.countries.length - 1]
-      );
+    if (isGrouped) {
+      if (Object.keys(groupFilteredData).length > 0) {
+        const cts: Country[] = [];
+        Object.entries(groupFilteredData).map(([groupKey, countries]) => {
+          countries.forEach((country) => cts.push(country));
+        });
+        if (cts.length >= 10) handleSelection(cts[9]);
+        else handleSelection(cts[cts.length - 1]);
+      }
+    } else {
+      if (filteredData.countries.length >= 10)
+        handleSelection(filteredData.countries[9]);
+      else
+        handleSelection(
+          filteredData.countries[filteredData.countries.length - 1]
+        );
+    }
   };
 
   useEffect(() => {
@@ -77,19 +88,25 @@ export default function Page() {
 
   useEffect(() => {
     selectOnLoadAndAfterFilter();
-  }, [filterAndGroup]);
+  }, [filteredData, groupFilteredData]);
 
   const handleSearch = (str: string) => {
     setSearchValue(str);
 
     const searchParams = str.split(" ");
-    let filteredData = [...data.countries];
+    let searchedData = [...data.countries];
+
+    const containsGroup = searchParams.some((param) =>
+      param.includes("group:")
+    );
+    if (containsGroup) setIsGrouped(true);
+    else setIsGrouped(false);
 
     searchParams.forEach((param) => {
       let [key, value] = param.split(":");
 
       if (key === "search") {
-        filteredData = filteredData.filter((c) =>
+        searchedData = searchedData.filter((c) =>
           Object.values(c).some(
             (val) =>
               typeof val === "string" &&
@@ -97,14 +114,40 @@ export default function Page() {
               val.toLowerCase().includes(value.trim().toLowerCase())
           )
         );
-      } else if (key === "group") {
-        //console.log(value);
+      } else if (key === "group" && value && value !== null) {
+        setGroupFilteredData(() => {
+          const groupedData = searchedData.reduce((acc, country) => {
+            const validKeys = Object.keys(country);
+
+            if (validKeys.includes(value.toLowerCase())) {
+              const groupName = getLastNestedValue(
+                country[value.toLowerCase() as keyof Country]
+              );
+
+              if (groupName !== null) {
+                if (!acc[groupName.toString()]) {
+                  acc[groupName.toString()] = [];
+                }
+                acc[groupName.toString()].push(country);
+              } else {
+                if (!acc["null"]) {
+                  acc["null"] = [];
+                }
+                acc["null"].push(country);
+              }
+            }
+            return acc;
+          }, {} as { [key: string]: Country[] });
+
+          return groupedData;
+        });
       }
 
       if (value === null || value === undefined) value = "";
       if (key === "search" && value === "")
-        setFilteredAndGroup({ countries: [...data.countries] });
-      else setFilteredAndGroup({ countries: filteredData });
+        setFilteredData({ countries: [...data.countries] });
+      else setFilteredData({ countries: searchedData });
+      if (key === "group" && value === "") setGroupFilteredData({});
     });
   };
 
@@ -113,8 +156,7 @@ export default function Page() {
   };
 
   const handleSelection = (country: Country) => {
-    if (country === selectedItem) return;
-    else {
+    if (country !== selectedItem) {
       setSelectedItem(country);
       setColorIndex((prev) => (prev + 1) % Object.keys(Colors.primary).length);
       const colorKeys = Object.keys(Colors.primary) as Array<
@@ -161,38 +203,23 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {filterAndGroup.countries.map((country, index) => (
-                <tr
-                  key={index}
-                  className={`${
-                    selectedItem === country
-                      ? selectedItemBgClass
-                      : "hover:bg-slate-100"
-                  } hover:cursor-pointer`}
-                  onClick={() => {
-                    handleSelection(country);
-                    handleDeselection(country);
-                  }}
-                >
-                  <td className="border p-2">{country.name}</td>
-                  <td className="border p-2">{country.native}</td>
-                  <td className="border p-2">{country.capital}</td>
-                  <td className="border p-2">{country.emoji}</td>
-                  <td className="border p-2">
-                    {splitCurrency(country.currency)}
-                  </td>
-                  <td className="border p-2">{country.continent.name}</td>
-                  <td className="border p-2">
-                    <ul>
-                      {country.languages.map((language, langIndex) => (
-                        <li key={langIndex}>
-                          {language.name} {language.code}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                </tr>
-              ))}
+              {!isGrouped ? (
+                <SearchTable
+                  filteredData={filteredData}
+                  selectedItem={selectedItem}
+                  selectedItemBgClass={selectedItemBgClass}
+                  handleSelection={handleSelection}
+                  handleDeselection={handleDeselection}
+                />
+              ) : (
+                <GroupTable
+                  groupFilteredData={groupFilteredData}
+                  selectedItem={selectedItem}
+                  selectedItemBgClass={selectedItemBgClass}
+                  handleSelection={handleSelection}
+                  handleDeselection={handleDeselection}
+                />
+              )}
             </tbody>
           </table>
         ) : (
