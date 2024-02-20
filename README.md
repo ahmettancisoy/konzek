@@ -19,29 +19,15 @@ git clone https://github.com/ahmettancisoy/konzek.git
 npm install
 ```
 
-3. Add `.env` files to both client and server directories.
-- Server
-```
-PORT=4000
-DB_URL=mongodb://127.0.0.1:27017/chatApp
-APP_URL=http://localhost:3000
-ACCESS_TOKEN_SECRET=accessSecret
-REFRESH_TOKEN_SECRET=refreshSecret
-```
-- Client
-```
-REACT_APP_SERVER_URL=http://localhost:4000
-```
-
 ## Running
 1. Run server
 ```
-nodemon server
+npm run start:dev
 ```
 
 2. Run client
 ```
-npm start
+npm run dev
 ```
 
 3. Navigate your web browser to
