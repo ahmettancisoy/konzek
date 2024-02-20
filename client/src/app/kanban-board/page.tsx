@@ -36,7 +36,7 @@ export const Page: React.FC = () => {
   async function fetchBoards() {
     try {
       const response = await fetch(
-        "http://localhost:5000/kanban/board-with-task"
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/kanban/board-with-task`
       );
       const data: BoardData[] = await response.json();
 
@@ -71,7 +71,7 @@ export const Page: React.FC = () => {
     dispatch(setIsDragging(true));
   };
 
-  const handleDragDrop = (result: DropResult) => {
+  const handleDragDrop = async (result: DropResult) => {
     dispatch(setIsDragging(false));
     if (!result.destination) return;
 
@@ -108,8 +108,9 @@ export const Page: React.FC = () => {
     destTasks.splice(destinationIndex, 0, movedTask);
 
     try {
-      const response = fetch(
-        `http://localhost:5000/kanban/task/${movedTask._id}`,
+      dispatch(setBoardData(updatedBoardData));
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/kanban/task/${movedTask._id}`,
         {
           method: "PUT",
           headers: {
@@ -124,8 +125,6 @@ export const Page: React.FC = () => {
     } catch (error) {
       console.error("Error updating task:", error);
     }
-
-    dispatch(setBoardData(updatedBoardData));
   };
 
   const handleBoardInput = (e: string) => {
@@ -134,13 +133,16 @@ export const Page: React.FC = () => {
 
   const handleAddBoard = async (title: string) => {
     try {
-      const response = await fetch("http://localhost:5000/kanban/board", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: title, order: 0 }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/kanban/board`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: title, order: 0 }),
+        }
+      );
       if (response) dispatch(setReload());
     } catch (error) {
       console.error("Error fetching:", error);

@@ -23,6 +23,9 @@ export class KanbanService {
   }
 
   async createTask(createTaskDto: CreateTaskDto): Promise<KanbanTask> {
+    const board = await this.boardModel.findById(createTaskDto.board);
+    const tasks = await this.taskModel.find({ board });
+    createTaskDto.order = tasks.length;
     const createTask = new this.taskModel(createTaskDto);
     return createTask.save();
   }

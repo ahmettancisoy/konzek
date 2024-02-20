@@ -9,7 +9,7 @@ export class CreateTaskDto {
 
   @IsNotEmpty()
   @IsNumber()
-  readonly order: number;
+  order: number;
 
   @IsNotEmpty()
   @IsMongoId()

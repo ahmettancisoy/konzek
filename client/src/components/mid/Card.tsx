@@ -28,17 +28,20 @@ const Card: React.FC<Props> = ({ children, title, id }) => {
 
   const handleNewTask = async (id: string, description: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/kanban/task`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          board: id,
-          order: 999,
-          description: description,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/kanban/task`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            board: id,
+            order: 999,
+            description: description,
+          }),
+        }
+      );
       setAddTaskValue("");
       dispatch(setReload());
     } catch (error) {
