@@ -35,11 +35,8 @@ export class KanbanController {
     return res;
   }
 
-  @Put('task/:id')
-  async updateTask(
-    @Param('id') id: string,
-    @Body() task: KanbanTask,
-  ): Promise<KanbanTask> {
-    return await this.kanbanService.updateTask(id, task);
+  @Put('task')
+  async updateTasks(@Body() tasks: KanbanTask[]): Promise<KanbanTask[]> {
+    return await this.kanbanService.updateTasks(tasks);
   }
 }

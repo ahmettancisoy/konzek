@@ -43,6 +43,7 @@ const Card: React.FC<Props> = ({ children, title, id }) => {
         }
       );
       setAddTaskValue("");
+      setIsAddTaskActive(false);
       dispatch(setReload());
     } catch (error) {
       console.error("Error updating task:", error);

@@ -2,6 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { KanbanBoard } from './kanban.board.schema';
 
+export type KanbanTaskDocument = mongoose.HydratedDocument<KanbanTask>;
+
 @Schema({ versionKey: false })
 export class KanbanTask {
   @Prop({ required: true })
@@ -16,6 +18,7 @@ export class KanbanTask {
     ref: 'KanbanBoard',
   })
   board: KanbanBoard;
+  _id: mongoose.Types.ObjectId;
 }
 
 export const KanbanTaskSchema = SchemaFactory.createForClass(KanbanTask);

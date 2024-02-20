@@ -27,6 +27,7 @@ export class KanbanService {
     const tasks = await this.taskModel.find({ board });
     createTaskDto.order = tasks.length;
     const createTask = new this.taskModel(createTaskDto);
+
     return createTask.save();
   }
 
@@ -49,10 +50,20 @@ export class KanbanService {
     return result;
   }
 
-  async updateTask(id: string, task: KanbanTask): Promise<KanbanTask> {
-    return await this.taskModel.findByIdAndUpdate(id, task, {
-      new: true,
-      runValidators: true,
-    });
+  async updateTasks(tasks: KanbanTask[]): Promise<KanbanTask[]> {
+    const updatedTasks = await Promise.all(
+      tasks.map(async (task, index) => {
+        task.order = index;
+        const { _id, ...updatedFields } = task;
+        const updatedTask = await this.taskModel.findByIdAndUpdate(
+          _id,
+          { $set: updatedFields },
+          { new: true, runValidators: true },
+        );
+        return updatedTask;
+      }),
+    );
+
+    return updatedTasks;
   }
 }

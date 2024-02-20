@@ -106,20 +106,21 @@ export const Page: React.FC = () => {
     }
 
     destTasks.splice(destinationIndex, 0, movedTask);
+    const updatedTasks = destTasks.map((task) => ({
+      ...task,
+      board: destBoardId,
+    }));
 
     try {
       dispatch(setBoardData(updatedBoardData));
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URI}/kanban/task/${movedTask._id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/kanban/task`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            board: destBoardId,
-            order: destinationIndex,
-          }),
+          body: JSON.stringify(updatedTasks),
         }
       );
     } catch (error) {
@@ -144,6 +145,8 @@ export const Page: React.FC = () => {
         }
       );
       if (response) dispatch(setReload());
+      setAddBoardValue("");
+      addBoardRef.current?.focus();
     } catch (error) {
       console.error("Error fetching:", error);
     }
