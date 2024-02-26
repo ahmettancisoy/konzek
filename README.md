@@ -1,4 +1,4 @@
-# Konzek Assignments
+# Konzek Frontend Developer Assignments
 This project contains a junior and a mid-level assignment.
 
 ## Technologies Used
