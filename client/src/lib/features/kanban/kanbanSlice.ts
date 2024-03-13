@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "@/lib/store";
 import { Task, Board } from "@/app/constants/taskType";
 
 interface KanbanState {
@@ -8,6 +7,7 @@ interface KanbanState {
   isDragging: boolean;
   boardData: { board: Board; tasks: Task[] }[];
   reload: boolean;
+  currentBoard: string;
 }
 
 const initialState: KanbanState = {
@@ -16,6 +16,7 @@ const initialState: KanbanState = {
   isDragging: false,
   boardData: [],
   reload: false,
+  currentBoard: "",
 };
 
 export const kanbanSlice = createSlice({
@@ -40,6 +41,9 @@ export const kanbanSlice = createSlice({
     setReload(state, action: PayloadAction<void>) {
       state.reload = !state.reload;
     },
+    setCurrentBoard(state, action: PayloadAction<string>) {
+      state.currentBoard = action.payload;
+    },
   },
 });
 
@@ -49,6 +53,7 @@ export const {
   setIsDragging,
   setBoardData,
   setReload,
+  setCurrentBoard,
 } = kanbanSlice.actions;
 
 export default kanbanSlice.reducer;

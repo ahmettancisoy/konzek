@@ -1,3 +1,4 @@
+"use client";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setPrimaryColor,
@@ -9,10 +10,16 @@ interface Props {
   baseColor: {
     background: string;
     text: string;
+    spinner: string;
+    focusBorder: string;
+    radioColor: string;
   };
   ringColor: {
     ring: string;
     textHover: string;
+    active: string;
+    background: string;
+    backgroundHover: string;
   };
 }
 
@@ -26,13 +33,17 @@ export default function ThemeColors({ baseColor, ringColor }: Props) {
   const handleClick = () => {
     dispatch(setPrimaryColor(baseColor));
     dispatch(setSecondaryColor(ringColor));
+    localStorage.setItem("primaryColor", JSON.stringify(baseColor));
+    localStorage.setItem("secondaryColor", JSON.stringify(ringColor));
   };
 
   return (
     <div
       className={`rounded-full w-5 h-5 hover:scale-110 transition-all cursor-pointer ${
         baseColor.background
-      } ${ringColor.ring} ${selectedColor === baseColor ? "ring-2" : "ring-1"}`}
+      } ${ringColor.ring} ${
+        selectedColor.background === baseColor.background ? "ring-2" : "ring-1"
+      }`}
       onClick={handleClick}
     ></div>
   );

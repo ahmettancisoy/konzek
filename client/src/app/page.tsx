@@ -168,12 +168,20 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-12 py-6 h-full px-12">
+    <div className="flex flex-col items-center space-y-8 pb-12 h-full px-12">
+      <div className="flex bg-red-300 text-red-800 text-xs p-2 rounded-xl space-x-1">
+        <div className="rounded-full bg-red-800 w-4 h-4 text-center text-red-100">
+          !
+        </div>
+        <span>
+          Next.js runs slow in dev environment on the first access to routes.
+        </span>
+      </div>
       <div className="w-96 relative">
         <input
           type="text"
           placeholder="search:tt group:continent"
-          className="py-2.5 pr-2.5 pl-10 text-sm rounded-full w-full shadow-sm placeholder:text-stone-400 focus:outline-none"
+          className="py-2.5 pr-2.5 pl-10 text-sm rounded-full w-full shadow-sm placeholder:text-stone-400 focus:ring-0 border-0"
           ref={searchRef}
           value={searchValue}
           onChange={(e) => handleSearch(e.target.value)}

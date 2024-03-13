@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "@/lib/store";
 import { Colors } from "@/app/constants/themeColors";
 
 // Define a type for the slice state
@@ -8,16 +7,18 @@ interface ColorState {
     background: string;
     text: string;
     spinner: string;
+    focusBorder: string;
+    radioColor: string;
   };
   secondaryColor: {
     ring: string;
     textHover: string;
     active: string;
     background: string;
+    backgroundHover: string;
   };
 }
 
-// Define the initial state using that type
 const initialState: ColorState = {
   primaryColor: Colors.primary.rose,
   secondaryColor: Colors.secondary.rose,
@@ -45,11 +46,5 @@ export const themeSlice = createSlice({
 });
 
 export const { setPrimaryColor, setSecondaryColor } = themeSlice.actions;
-
-//Other code such as selectors can use the imported `RootState` type
-export const selectedColor = (state: RootState) => {
-  state.themeColor.primaryColor;
-  state.themeColor.secondaryColor;
-};
 
 export default themeSlice.reducer;

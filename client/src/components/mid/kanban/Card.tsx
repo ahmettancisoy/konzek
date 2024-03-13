@@ -4,7 +4,7 @@ import { RootState } from "@/lib/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Droppable } from "react-beautiful-dnd";
 import { IoMdSend } from "react-icons/io";
-import { setReload } from "@/lib/features/kanban/kanbanSlice";
+import { setReload, setCurrentBoard } from "@/lib/features/kanban/kanbanSlice";
 
 interface Props {
   children: ReactNode;
@@ -14,9 +14,11 @@ interface Props {
 
 const Card: React.FC<Props> = ({ children, title, id }) => {
   const dispatch = useDispatch();
-  const reload = useSelector((state: RootState) => state.kanban.reload);
   const primaryColor = useSelector(
     (state: RootState) => state.themeColor.primaryColor
+  );
+  const currentBoard = useSelector(
+    (state: RootState) => state.kanban.currentBoard
   );
   const [isAddTaskActive, setIsAddTaskActive] = useState(false);
   const [addTaskValue, setAddTaskValue] = useState("");
@@ -43,11 +45,16 @@ const Card: React.FC<Props> = ({ children, title, id }) => {
         }
       );
       setAddTaskValue("");
-      setIsAddTaskActive(false);
       dispatch(setReload());
     } catch (error) {
       console.error("Error updating task:", error);
     }
+  };
+
+  const handleAddTask = (id: string) => {
+    setIsAddTaskActive((prev) => !prev);
+    ref.current?.focus();
+    dispatch(setCurrentBoard(id));
   };
 
   return (
@@ -68,12 +75,12 @@ const Card: React.FC<Props> = ({ children, title, id }) => {
       </Droppable>
 
       <div className={`flex items-center space-x-2 ${primaryColor.text}`}>
-        {!isAddTaskActive ? (
+        {currentBoard !== id ? (
           <>
             <IoAddCircleOutline />
             <span
               className="text-sm cursor-pointer"
-              onClick={() => setIsAddTaskActive(true)}
+              onClick={() => handleAddTask(id)}
             >
               Add task
             </span>
@@ -84,9 +91,12 @@ const Card: React.FC<Props> = ({ children, title, id }) => {
               type="text"
               ref={ref}
               placeholder="description"
-              className="text-xs rounded-full bg-slate-200 focus:outline-none py-2 px-4"
+              className="text-xs rounded-full bg-slate-200 focus:outline-none py-2 px-4 focus:ring-0 border-0"
               value={addTaskValue}
               onChange={(e) => setAddTaskValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleNewTask(id, addTaskValue);
+              }}
             />
 
             <div

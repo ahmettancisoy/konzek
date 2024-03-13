@@ -1,6 +1,6 @@
 "use client";
-import Card from "@/components/mid/Card";
-import Task from "@/components/mid/Task";
+import Card from "@/components/mid/kanban/Card";
+import Task from "@/components/mid/kanban/Task";
 import { useEffect, useRef, useState } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { Task as TaskType, BoardData } from "../constants/taskType";
@@ -158,7 +158,7 @@ export const Page: React.FC = () => {
         <input
           type="text"
           placeholder="board title"
-          className="py-2.5 px-6 text-sm rounded-full w-72 shadow-sm placeholder:text-stone-400 focus:outline-none"
+          className="py-2.5 px-6 text-sm rounded-full w-72 shadow-sm placeholder:text-stone-400 focus:ring-0 border-0"
           ref={addBoardRef}
           value={addBoardValue}
           onChange={(e) => handleBoardInput(e.target.value)}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put } from '@nestjs/common';
 import { KanbanService } from './kanban.service';
 import { KanbanBoard } from 'src/schemas/kanban.board.schema';
 import { KanbanTask } from 'src/schemas/kanban.task.schema';

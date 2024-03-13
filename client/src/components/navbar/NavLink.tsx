@@ -1,3 +1,4 @@
+"use client";
 import { RootState } from "@/lib/store";
 import Link from "next/link";
 import { useSelector } from "react-redux";
@@ -17,7 +18,9 @@ const NavLink: React.FC<Props> = ({ href, text }) => {
   return (
     <Link
       className={`${secondaryColor.textHover} transition-all ${
-        pathname === href ? secondaryColor.active : ""
+        pathname === href || "/" + pathname.split("/")[1] === href
+          ? secondaryColor.active
+          : ""
       }`}
       href={href}
     >
