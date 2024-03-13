@@ -32,10 +32,8 @@ export default function AuthRoleLayout({
         </div>
       ) : (
         <div className="text-xl font-extralight text-center p-2">
-          {`Hello guest, if you would like to visit pages, please `}
-          <span className={`${secondaryColor.active}`}>register</span>
-          {` | `}
-          <span className={`${secondaryColor.active}`}>login</span>.
+          Hello guest, if you would like to visit pages, please register or
+          login.
         </div>
       )}
       <div className="flex space-x-6 px-12 py-6 h-full max-h-[calc(100%-4rem)]">

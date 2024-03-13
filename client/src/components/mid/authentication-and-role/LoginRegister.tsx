@@ -77,6 +77,9 @@ const LoginRegister = () => {
       <InputUserName value={userName} setValue={setUserName} />
       <InputPassword value={password} setValue={setPassword} />
       <div className="px-4 pb-4">
+        <div className="text-sm text-gray-800 pb-2">
+          Choose the role that you want to register as.
+        </div>
         <div className="space-x-4 pb-6 flex text-sm">
           <label
             htmlFor="user"

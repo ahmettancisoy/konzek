@@ -30,9 +30,7 @@ const page = () => {
 
   useEffect(() => {
     if (token !== undefined && token !== null && token !== "") {
-      if (roles.includes("admin"))
-        router.replace("/authentication-and-role/admin");
-      else if (roles.includes("user"))
+      if (roles.includes("user"))
         router.replace("/authentication-and-role/user");
     }
 
@@ -73,10 +71,15 @@ const page = () => {
           ) : (
             <div className="flex h-full">
               <LoginRegister />
-              {hasUsers ? null : (
-                <>
-                  <div className="border-r border-r-slate-200 mx-4 w-4"></div>
-                  <div className="p-2 flex flex-col">
+
+              <>
+                <div className="border-r border-r-slate-200 mx-4 w-4"></div>
+                <div className="space-y-4 p-2">
+                  <div className="text-gray-600">
+                    You can insert and use following information to login and
+                    visit pages.
+                  </div>
+                  <div className="flex flex-col">
                     <div className="flex space-x-4">
                       <table className="border text-slate-500">
                         <tbody>
@@ -104,7 +107,7 @@ const page = () => {
                       </table>
                     </div>
                     <button
-                      className={`bg-green-200 text-green-800 hover:bg-green-300 hover:text-green-900 transition-colors rounded-md p-2 mt-4 w-fit self-end ${
+                      className={`bg-green-200 text-green-800 hover:bg-green-300 hover:text-green-900 transition-colors rounded-md p-2 mt-4 w-fit ${
                         isInserting ? "cursor-not-allowed" : ""
                       }`}
                       type="button"
@@ -114,8 +117,8 @@ const page = () => {
                       {isInserting ? "Loading..." : "Insert"}
                     </button>
                   </div>
-                </>
-              )}
+                </div>
+              </>
             </div>
           )}
         </div>
